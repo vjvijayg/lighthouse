@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- :root {
+.lh-report {
   --text-font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', 'Lucida Grande', sans-serif;
   --body-font-size: 13px;
   --body-line-height: 1.5;
@@ -36,11 +36,11 @@
   --lh-category-score-width: 50px;
 }
 
-* {
+.lh-report, .lh-report * {
   box-sizing: border-box;
 }
 
-body {
+.lh-report {
   font-family: var(--text-font-family);
   font-size: var(--body-font-size);
   margin: 0;
