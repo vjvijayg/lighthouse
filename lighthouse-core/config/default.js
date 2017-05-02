@@ -68,6 +68,7 @@ module.exports = {
     "load-fast-enough-for-pwa",
     "speed-index-metric",
     "estimated-input-latency",
+    "time-to-firstbyte",
     "time-to-interactive",
     "user-timings",
     "critical-request-chains",
@@ -171,6 +172,10 @@ module.exports = {
           "weight": 1
         },
         "estimated-input-latency": {
+          "expectedValue": 100,
+          "weight": 1
+        },
+        "time-to-firstbyte": {
           "expectedValue": 100,
           "weight": 1
         },
@@ -615,6 +620,7 @@ module.exports = {
         {"id": "first-meaningful-paint", "weight": 5},
         {"id": "speed-index-metric", "weight": 1},
         {"id": "estimated-input-latency", "weight": 1},
+        {"id": "time-to-firstbyte", "weight": 1},
         {"id": "time-to-interactive", "weight": 5},
         {"id": "link-blocking-first-paint", "weight": 0},
         {"id": "script-blocking-first-paint", "weight": 0},
