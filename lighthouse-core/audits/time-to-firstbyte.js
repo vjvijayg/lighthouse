@@ -32,9 +32,11 @@ class TTFBMetric extends Audit {
     return {
       category: 'Performance',
       name: 'time-to-firstbyte',
-      description: 'Time To FirstByte',
-      helpText: 'Time To First Byte identifies the time at which your server sends a response.',
-      requiredArtifacts: ['URL', 'networkRecords']
+      description: 'Time To First Byte (TTFB)',
+      informative: true,
+      helpText: 'Time To First Byte identifies the time at which your server sends a response.' +
+        '[Learn more](https://developers.google.com/web/tools/chrome-devtools/network-performance/issues).',
+      requiredArtifacts: ['networkRecords']
     };
   }
 
@@ -57,15 +59,13 @@ class TTFBMetric extends Audit {
       children.forEach(id => {
         const child = node[id];
 
-        const networkRecord = networkRecords.find(record => {
-          return record._requestId === id;
-        });
+        const networkRecord = networkRecords.find(record => record._requestId === id);
 
         if (networkRecord) {
           const ttfb = TTFBMetric.caclulateTTFB(networkRecord);
           results.push({
             url: URL.getDisplayName(networkRecord._url),
-            ttfb: `${Math.round(ttfb)}ms`,
+            ttfb: `${Math.round(ttfb).toLocaleString()} ms`,
             rawTTFB: ttfb
           });
         }
@@ -80,14 +80,12 @@ class TTFBMetric extends Audit {
       walk(tree);
 
       const recordsOverBudget = results.filter(row =>
-        row.rawTTFB > TTFB_THRESHOLD + TTFB_THRESHOLD_BUFFER);
+          row.rawTTFB > TTFB_THRESHOLD + TTFB_THRESHOLD_BUFFER);
       let displayValue;
 
       if (recordsOverBudget.length) {
         displayValue = recordsOverBudget.length +
-        ` critical request(s) went over the ${TTFB_THRESHOLD}ms threshold`;
-      } else {
-        displayValue = 'All critical server requests are fast.';
+          ` critical request(s) went over the ${TTFB_THRESHOLD} ms threshold`;
       }
 
       return {

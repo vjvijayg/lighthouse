@@ -176,7 +176,7 @@ module.exports = {
           "weight": 1
         },
         "time-to-firstbyte": {
-          "expectedValue": 100,
+          "expectedValue": true,
           "weight": 1
         },
         "time-to-interactive": {
@@ -620,7 +620,6 @@ module.exports = {
         {"id": "first-meaningful-paint", "weight": 5},
         {"id": "speed-index-metric", "weight": 1},
         {"id": "estimated-input-latency", "weight": 1},
-        {"id": "time-to-firstbyte", "weight": 1},
         {"id": "time-to-interactive", "weight": 5},
         {"id": "link-blocking-first-paint", "weight": 0},
         {"id": "script-blocking-first-paint", "weight": 0},
@@ -628,6 +627,7 @@ module.exports = {
         {"id": "uses-optimized-images", "weight": 0},
         {"id": "uses-request-compression", "weight": 0},
         {"id": "uses-responsive-images", "weight": 0},
+        {"id": "time-to-firstbyte", "weight": 0},
         {"id": "total-byte-weight", "weight": 0},
         {"id": "dom-size", "weight": 0},
         {"id": "critical-request-chains", "weight": 0},
