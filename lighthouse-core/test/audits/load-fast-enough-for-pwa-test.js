@@ -46,6 +46,12 @@ describe('PWA: load-fast-enough-for-pwa audit', () => {
     });
   });
 
+  it('returns details', () => {
+    return FastPWAAudit.audit(generateArtifacts(5000)).then(result => {
+      assert.ok(result.details, 'contains details');
+    });
+  });
+
   it('fails a bad TTI value', () => {
     return FastPWAAudit.audit(generateArtifacts(15000)).then(result => {
       assert.equal(result.rawValue, false, 'not failing a long TTI value');
