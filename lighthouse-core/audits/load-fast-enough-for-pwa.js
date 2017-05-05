@@ -55,8 +55,9 @@ class LoadFastEnough4Pwa extends Audit {
       const allRequestLatencies = networkRecords.map(record => {
         // Ignore requests that don't have timing data or resources that have
         // previously been requested and are coming from the cache.
-        if (!record._timing || record._fromDiskCache || record._fromMemoryCache) {
-          return {url: record._url};
+        const fromCache = record._fromDiskCache || record._fromMemoryCache;
+        if (!record._timing || fromCache) {
+          return undefined;
         }
 
         // Use DevTools' definition of Waiting latency: https://github.com/ChromeDevTools/devtools-frontend/blob/66595b8a73a9c873ea7714205b828866630e9e82/front_end/network/RequestTimingView.js#L164
@@ -70,7 +71,7 @@ class LoadFastEnough4Pwa extends Audit {
 
       const latency3gMin = Emulation.settings.TYPICAL_MOBILE_THROTTLING_METRICS.latency - 10;
       const areLatenciesAll3G = allRequestLatencies.every(val =>
-          val.latency === undefined || val.latency > latency3gMin);
+          val === undefined || val.latency > latency3gMin);
 
       const trace = artifacts.traces[Audit.DEFAULT_PASS];
       return artifacts.requestFirstInteractive(trace).then(firstInteractive => {
@@ -82,10 +83,13 @@ class LoadFastEnough4Pwa extends Audit {
           value: {areLatenciesAll3G, allRequestLatencies, isFast, timeToFirstInteractive}
         };
 
+        // Filter records that don't have latencies.
+        const recordsWithLatencies = allRequestLatencies.filter(val => val !== undefined);
+
         const details = Audit.makeV2TableDetails([
           {key: 'url', itemType: 'url', text: 'URL'},
           {key: 'latency', itemType: 'text', text: 'Latency (ms)'},
-        ], allRequestLatencies.filter(record => record.latency !== undefined));
+        ], recordsWithLatencies);
 
         if (!areLatenciesAll3G) {
           return {
@@ -102,15 +106,13 @@ class LoadFastEnough4Pwa extends Audit {
             rawValue: false,
             // eslint-disable-next-line max-len
             debugString: `Under 3G conditions, First Interactive was at ${timeToFirstInteractive.toLocaleString()}. More details in the "Performance" section.`,
-            extendedInfo,
-            details
+            extendedInfo
           };
         }
 
         return {
           rawValue: true,
-          extendedInfo,
-          details
+          extendedInfo
         };
       });
     });
