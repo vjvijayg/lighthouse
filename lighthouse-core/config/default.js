@@ -15,6 +15,7 @@ module.exports = {
       "chrome-console-messages",
       "image-usage",
       "accessibility",
+      "dobetterweb/all-event-listeners",
       "dobetterweb/anchors-with-no-rel-noopener",
       "dobetterweb/appcache",
       "dobetterweb/domstats",
