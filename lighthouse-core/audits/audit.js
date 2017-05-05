@@ -56,6 +56,11 @@ class Audit {
     });
   }
 
+  /**
+   * @param {!Artifacts} artifacts
+   * @param {!RegExp} pattern
+   * @return {!Array}
+   */
   static getViolationResults(artifacts, pattern) {
     return artifacts.ChromeConsoleMessages
         .map(message => message.entry)
