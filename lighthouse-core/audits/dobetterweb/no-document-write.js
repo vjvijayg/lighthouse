@@ -37,7 +37,7 @@ class NoDocWriteAudit extends Audit {
       helpText: 'For users on slow connections, external scripts dynamically injected via ' +
           '`document.write()` can delay page load by tens of seconds. ' +
           '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/document-write).',
-      requiredArtifacts: ['DocWriteUse']
+      requiredArtifacts: ['ChromeConsoleMessages']
     };
   }
 
@@ -46,11 +46,7 @@ class NoDocWriteAudit extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    const results = artifacts.DocWriteUse.map(err => {
-      return Object.assign({
-        label: `line: ${err.line}, col: ${err.col}`
-      }, err);
-    });
+    const results = Audit.getViolationResults(artifacts, /document\.write/);
 
     return {
       rawValue: results.length === 0,

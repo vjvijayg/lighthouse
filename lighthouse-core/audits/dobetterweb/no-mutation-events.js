@@ -24,25 +24,9 @@
 
 const URL = require('../../lib/url-shim');
 const Audit = require('../audit');
-const EventHelpers = require('../../lib/event-helpers');
 const Formatter = require('../../report/formatter');
 
 class NoMutationEventsAudit extends Audit {
-
-  static get MUTATION_EVENTS() {
-    return [
-      'DOMAttrModified',
-      'DOMAttributeNameChanged',
-      'DOMCharacterDataModified',
-      'DOMElementNameChanged',
-      'DOMNodeInserted',
-      'DOMNodeInsertedIntoDocument',
-      'DOMNodeRemoved',
-      'DOMNodeRemovedFromDocument',
-      'DOMSubtreeModified'
-    ];
-  }
-
   /**
    * @return {!AuditMeta}
    */
@@ -53,7 +37,7 @@ class NoMutationEventsAudit extends Audit {
       description: 'Avoids Mutation Events in its own scripts',
       helpText: 'Mutation Events are deprecated and harm performance. Consider using Mutation ' +
           'Observers instead. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/mutation-events).',
-      requiredArtifacts: ['URL', 'EventListeners']
+      requiredArtifacts: ['ChromeConsoleMessages']
     };
   }
 
@@ -62,33 +46,14 @@ class NoMutationEventsAudit extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    let debugString;
-    const listeners = artifacts.EventListeners;
-
-    const results = listeners.filter(loc => {
-      const isMutationEvent = this.MUTATION_EVENTS.includes(loc.type);
-      let sameHost = URL.hostsMatch(artifacts.URL.finalUrl, loc.url);
-
-      if (!URL.isValid(loc.url)) {
-        sameHost = true;
-        debugString = URL.INVALID_URL_DEBUG_STRING;
-      }
-
-      return sameHost && isMutationEvent;
-    }).map(EventHelpers.addFormattedCodeSnippet);
-
-    const groupedResults = EventHelpers.groupCodeSnippetsByLocation(results);
+    const results = Audit.getViolationResults(artifacts, /mutation/);
 
     return {
-      rawValue: groupedResults.length === 0,
+      rawValue: results.length === 0,
       extendedInfo: {
-        formatter: Formatter.SUPPORTED_FORMATS.TABLE,
-        value: {
-          results: groupedResults,
-          tableHeadings: {url: 'URL', lineCol: 'Line/Col', type: 'Event', code: 'Snippet'}
-        }
+        formatter: Formatter.SUPPORTED_FORMATS.URL_LIST,
+        value: results,
       },
-      debugString
     };
   }
 }

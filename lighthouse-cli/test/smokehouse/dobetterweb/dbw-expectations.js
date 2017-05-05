@@ -32,7 +32,7 @@ module.exports = [
         extendedInfo: {
           value: {
             results: {
-              length: 13
+              length: 14
             }
           }
         }
@@ -64,26 +64,6 @@ module.exports = [
           }
         }
       },
-      'no-console-time': {
-        score: false,
-        extendedInfo: {
-          value: {
-            results: {
-              length: 3
-            }
-          }
-        }
-      },
-      'no-datenow': {
-        score: false,
-        extendedInfo: {
-          value: {
-            results: {
-              length: 5
-            }
-          }
-        }
-      },
       'no-document-write': {
         score: false,
         extendedInfo: {
@@ -92,16 +72,16 @@ module.exports = [
           }
         }
       },
-      'no-mutation-events': {
-        score: false,
-        extendedInfo: {
-          value: {
-            results: {
-              length: 6
-            }
-          }
-        }
-      },
+      // 'no-mutation-events': {
+      //   score: false,
+      //   extendedInfo: {
+      //     value: {
+      //       results: {
+      //         length: 6
+      //       }
+      //     }
+      //   }
+      // },
       // 'no-old-flexbox': {
       //   score: false,
       //   extendedInfo: {
@@ -135,9 +115,7 @@ module.exports = [
           value: {
             // Note: This would normally be 7 but M56 defaults document-level
             // listeners to passive. See https://www.chromestatus.com/features/5093566007214080
-            results: {
-              length: 4
-            }
+            length: 4
           }
         }
       },
@@ -230,12 +208,6 @@ module.exports = [
         score: true
       },
       'link-blocking-first-paint': {
-        score: true
-      },
-      'no-console-time': {
-        score: true
-      },
-      'no-datenow': {
         score: true
       },
       'no-document-write': {

@@ -45,23 +45,26 @@ class LinkBlockingFirstPaintAudit extends Audit {
       helpText: 'Link elements are blocking the first paint of your page. Consider ' +
           'inlining critical links and deferring non-critical ones. ' +
           '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/blocking-resources).',
-      requiredArtifacts: ['TagsBlockingFirstPaint']
+      requiredArtifacts: ['TagsBlockingFirstPaint', 'traces']
     };
   }
 
   /**
    * @param {!Artifacts} artifacts
    * @param {string} tagFilter The tagName to filter on
+   * @param {number=} endedBefore The trace milisecond timestamp that offending tags must have ended
+   *    before (typically first contentful paint).
    * @param {number=} loadThreshold Filter to resources that took at least this
    *    many milliseconds to load.
    * @return {!AuditResult} The object to pass to `generateAuditResult`
    */
-  static computeAuditResultForTags(artifacts, tagFilter, loadThreshold = 0) {
+  static computeAuditResultForTags(artifacts, tagFilter, endedBefore = 0, loadThreshold = 0) {
     const artifact = artifacts.TagsBlockingFirstPaint;
 
     const filtered = artifact.filter(item => {
       return item.tag.tagName === tagFilter &&
-        (item.endTime - item.startTime) * 1000 >= loadThreshold;
+        (item.endTime - item.startTime) * 1000 >= loadThreshold &&
+        item.endTime * 1000 < endedBefore;
     });
 
     const startTime = filtered.reduce((t, item) => Math.min(t, item.startTime), Number.MAX_VALUE);
@@ -113,7 +116,11 @@ class LinkBlockingFirstPaintAudit extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    return this.computeAuditResultForTags(artifacts, 'LINK', LOAD_THRESHOLD_IN_MS);
+    const trace = artifacts.traces[Audit.DEFAULT_PASS];
+    return artifacts.requestTraceOfTab(trace).then(traceOfTab => {
+      const fcp = traceOfTab.timestamps.firstContentfulPaint;
+      return this.computeAuditResultForTags(artifacts, 'LINK', fcp, LOAD_THRESHOLD_IN_MS);
+    });
   }
 }
 

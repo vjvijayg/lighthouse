@@ -37,7 +37,7 @@ class NotificationOnStart extends Audit {
       helpText: 'Users are mistrustful of or confused by sites that request to send ' +
           'notifications without context. Consider tying the request to user gestures ' +
           'instead. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/notifications-on-load).',
-      requiredArtifacts: ['NotificationOnStart']
+      requiredArtifacts: ['ChromeConsoleMessages']
     };
   }
 
@@ -46,11 +46,7 @@ class NotificationOnStart extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    const results = artifacts.NotificationOnStart.map(err => {
-      return Object.assign({
-        label: `line: ${err.line}, col: ${err.col}`
-      }, err);
-    });
+    const results = Audit.getViolationResults(artifacts, /notification permission/);
 
     return {
       rawValue: results.length === 0,

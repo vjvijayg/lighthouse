@@ -37,7 +37,7 @@ class GeolocationOnStart extends Audit {
       helpText: 'Users are mistrustful of or confused by sites that request their ' +
           'location without context. Consider tying the request to user gestures instead. ' +
           '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/geolocation-on-load).',
-      requiredArtifacts: ['GeolocationOnStart']
+      requiredArtifacts: ['ChromeConsoleMessages']
     };
   }
 
@@ -46,12 +46,7 @@ class GeolocationOnStart extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    const results = artifacts.GeolocationOnStart.map(err => {
-      return Object.assign({
-        label: `line: ${err.line}, col: ${err.col}`
-      }, err);
-    });
-
+    const results = Audit.getViolationResults(artifacts, /geolocation/);
     return {
       rawValue: results.length === 0,
       extendedInfo: {

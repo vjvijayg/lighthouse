@@ -38,7 +38,7 @@ class ScriptBlockingFirstPaint extends Audit {
       helpText: 'Script elements are blocking the first paint of your page. Consider inlining ' +
           'critical scripts and deferring non-critical ones. ' +
           '[Learn more](https://developers.google.com/web/tools/lighthouse/audits/blocking-resources).',
-      requiredArtifacts: ['TagsBlockingFirstPaint']
+      requiredArtifacts: ['TagsBlockingFirstPaint', 'traces']
     };
   }
 
@@ -47,8 +47,11 @@ class ScriptBlockingFirstPaint extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    const result = LinkBlockingFirstPaintAudit.computeAuditResultForTags(artifacts, 'SCRIPT');
-    return result;
+    const trace = artifacts.traces[Audit.DEFAULT_PASS];
+    return artifacts.requestTraceOfTab(trace).then(traceOfTab => {
+      const fcp = traceOfTab.timestamps.firstContentfulPaint;
+      return LinkBlockingFirstPaintAudit.computeAuditResultForTags(artifacts, 'SCRIPT', fcp);
+    });
   }
 }
 
