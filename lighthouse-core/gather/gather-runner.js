@@ -45,7 +45,8 @@ let GathererResults; // eslint-disable-line no-unused-vars
  * 2. For each pass in the config:
  *   A. GatherRunner.beforePass()
  *     i. navigate to about:blank
- *     ii. all gatherers' beforePass()
+ *     ii. Enable network request blocking for specified patterns
+ *     iii. all gatherers' beforePass()
  *   B. GatherRunner.pass()
  *     i. beginTrace (if requested) & beginDevtoolsLog
  *     ii. GatherRunner.loadPage()
@@ -112,7 +113,6 @@ class GatherRunner {
       .then(_ => driver.dismissJavaScriptDialogs())
       .then(_ => resetStorage && driver.cleanAndDisableBrowserCaches())
       .then(_ => resetStorage && driver.clearDataForOrigin(options.url))
-      .then(_ => driver.blockUrlPatterns(options.flags.blockedUrlPatterns || []))
       .then(_ => gathererResults.UserAgent = [driver.getUserAgent()]);
   }
 
@@ -171,9 +171,12 @@ class GatherRunner {
    * @return {!Promise}
    */
   static beforePass(options, gathererResults) {
+    const blockedUrls = (options.config.blockedUrlPatterns || [])
+      .concat(options.flags.blockedUrlPatterns || []);
     const blankPage = options.config.blankPage;
     const blankDuration = options.config.blankDuration;
-    const pass = GatherRunner.loadBlank(options.driver, blankPage, blankDuration);
+    const pass = GatherRunner.loadBlank(options.driver, blankPage, blankDuration)
+        .then(() => options.driver.blockUrlPatterns(blockedUrls));
 
     return options.config.gatherers.reduce((chain, gatherer) => {
       return chain.then(_ => {

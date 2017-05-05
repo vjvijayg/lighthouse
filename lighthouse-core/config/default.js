@@ -27,6 +27,18 @@ module.exports = {
   {
     "passName": "redirectPass",
     "useThrottling": false,
+    // Speed up the redirect pass by blocking stylesheets, fonts, and images
+    "blockedUrlPatterns": [
+      "*.css",
+      "*.jpg",
+      "*.jpeg",
+      "*.png",
+      "*.gif",
+      "*.svg",
+      "*.ttf",
+      "*.woff",
+      "*.woff2",
+    ],
     "gatherers": [
       "http-redirect",
       "html-without-javascript"
